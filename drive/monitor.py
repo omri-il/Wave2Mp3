@@ -30,7 +30,8 @@ class DriveMonitor:
         """List all .wav files in the source folder, sorted by createdTime."""
         query = (
             f"'{settings.drive_source_folder_id}' in parents "
-            f"and (mimeType='audio/wav' or mimeType='audio/x-wav' or name contains '.wav') "
+            f"and (mimeType='audio/wav' or mimeType='audio/x-wav' "
+            f"or name contains '.wav' or name contains '.WAV') "
             f"and trashed=false"
         )
         files: list[DriveWavFile] = []

@@ -11,7 +11,17 @@ logger = logging.getLogger(__name__)
 
 
 def _parse_sequence_number(filename: str) -> int:
-    """Extract sequence number from filename like REC_001.wav → 1."""
+    """
+    Extract sequence number from filename.
+    Handles patterns like:
+      DJI_15_20260413_135841.WAV → 15
+      REC_001.wav → 1
+    """
+    # Try DJI pattern: letters_NUMBER_date_time
+    m = re.match(r"[A-Za-z]+_(\d+)_", filename)
+    if m:
+        return int(m.group(1))
+    # Fallback: first number found
     m = re.search(r"(\d+)", filename)
     return int(m.group(1)) if m else 0
 
