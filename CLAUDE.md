@@ -83,6 +83,22 @@ sudo systemctl enable --now wave2mp3
 Optional. Requires the notebooklm-api bridge running on Home PC (`http://100.111.186.101:5111`).
 Set `NOTEBOOKLM_API_URL` in `.env` to enable. If bridge is unreachable, notifications are sent via Telegram — non-fatal.
 
+## NotebookLM Bridge
+
+The bridge runs on the **laptop** at `c:\Users\omrii\projects\notebooklm-api\`.
+- Authenticated: ✅ `C:\Users\omrii\.notebooklm\storage_state.json`
+- API key: in `notebooklm-api/.env` → `API_KEY=notebooklm-bridge-2026`
+- Start: `cd c:\Users\omrii\projects\notebooklm-api && uvicorn server:app --host 0.0.0.0 --port 5111`
+- VPS reaches it via Tailscale: `http://100.111.186.101:5111`
+- VPS `.env`: `NOTEBOOKLM_API_URL=http://100.111.186.101:5111` and `NOTEBOOKLM_API_KEY=notebooklm-bridge-2026`
+- **Must be running on laptop** for NotebookLM upload to work — non-fatal if offline
+
+## File Naming
+
+Mic produces files like: `DJI_15_20260413_135841.WAV`
+- Session grouper extracts sequence number from position 2 (`DJI_[SEQ]_date_time`)
+- Drive query matches both `.wav` and `.WAV` (uppercase)
+
 ## GitHub
 
 https://github.com/omri-il/Wave2Mp3
