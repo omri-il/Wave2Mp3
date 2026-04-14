@@ -6,7 +6,7 @@ WAV session merger and converter. Polls Google Drive for .wav recordings from a 
 
 Two components:
 1. **VPS Agent** (`main.py`) — Polls Drive, groups sessions, merges via FFmpeg, uploads MP3, archives originals, sends Telegram notifications
-2. **USB Transfer** (`usb_transfer/`) — Laptop script that detects USB mic, uploads .wav to Drive, asks via Telegram whether to delete from mic
+2. **USB Transfer** (`usb_transfer/`) — Laptop script that detects USB mic, checks which files are already on Drive, uploads new ones, offers to delete confirmed-on-Drive files via Telegram
 
 ## Project Structure
 
@@ -23,7 +23,7 @@ processor/audio_merger.py    — FFmpeg concat + WAV→MP3
 notifier/telegram_bot.py     — Telegram notifications + inline keyboard
 notebooklm/client.py        — HTTP client for NotebookLM bridge
 usb_transfer/detector.py    — USB drive detection (psutil)
-usb_transfer/transfer.py    — Copy .wav from mic → Drive + delete prompt
+usb_transfer/transfer.py    — Copy .wav from mic → Drive, skip already-uploaded, Telegram delete prompt
 deploy/wave2mp3.service      — systemd unit
 ```
 
