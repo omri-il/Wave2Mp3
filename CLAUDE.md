@@ -77,6 +77,7 @@ sudo systemctl enable --now wave2mp3
 - **systemd:** `wave2mp3.service`
 - **Logs:** `journalctl -u wave2mp3 -f`
 - **Restart:** `systemctl restart wave2mp3`
+- ⚠️ **Keep `httpx`/`httpcore` at WARNING** (right after `basicConfig` in `main.py` and `usb_transfer/transfer.py`). python-telegram-bot sends through httpx, which logs every request URL at INFO — and a Telegram URL contains the bot token. This bot is shared with ~10 other services, so a leak here would expose all of them.
 
 ## NotebookLM Integration
 
