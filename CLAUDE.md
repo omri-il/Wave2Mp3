@@ -86,13 +86,12 @@ Set `NOTEBOOKLM_API_URL` in `.env` to enable. If bridge is unreachable, notifica
 
 ## NotebookLM Bridge
 
-The bridge runs on the **laptop** at `c:\Users\omrii\projects\notebooklm-api\`.
-- Authenticated: ✅ `C:\Users\omrii\.notebooklm\storage_state.json`
-- API key: in `notebooklm-api/.env` → `API_KEY=notebooklm-bridge-2026`
-- Start: `cd c:\Users\omrii\projects\notebooklm-api && uvicorn server:app --host 0.0.0.0 --port 5111`
-- VPS reaches it via Tailscale: `http://100.111.186.101:5111`
-- VPS `.env`: `NOTEBOOKLM_API_URL=http://100.111.186.101:5111` and `NOTEBOOKLM_API_KEY=notebooklm-bridge-2026`
-- **Must be running on laptop** for NotebookLM upload to work — non-fatal if offline
+The bridge (repo `notebooklm-api`) runs on the **home PC** (`desktop-7hqm8go`) at `C:\Users\omrii\Projects\notebooklm-api\`.
+- Start: the scheduled task **"NotebookLM API Server"** runs `start_bridge_hidden.vbs`, which runs `py -3.10 -m uvicorn server:app --host 0.0.0.0 --port 5111`. The task **"NotebookLM Bridge Watchdog"** restarts it if it dies.
+- Google login state: `%USERPROFILE%\.notebooklm\profiles\` on the home PC (details in notebooklm-api's CLAUDE.md)
+- API key: in the home PC's `notebooklm-api/.env` as `API_KEY`, and in the VPS `/root/Projects/Wave2Mp3/.env` as `NOTEBOOKLM_API_KEY`. Never write the value in this file: this repo is public.
+- VPS reaches it via Tailscale: `http://100.111.186.101:5111` (`NOTEBOOKLM_API_URL` in the VPS `.env`)
+- **Must be running on the home PC** for NotebookLM upload to work — non-fatal if offline
 
 ## File Naming
 
