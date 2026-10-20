@@ -58,6 +58,10 @@ class Settings:
     telegram_bot_token: str = field(default_factory=lambda: os.getenv("TELEGRAM_BOT_TOKEN", ""))
     telegram_chat_id: str = field(default_factory=lambda: os.getenv("TELEGRAM_CHAT_ID", ""))
 
+    # business-hq's receipts box — good news goes to the 08:00 digest, not Telegram
+    hq_receipt_url: str = field(default_factory=lambda: os.getenv("HQ_RECEIPT_URL", ""))
+    hq_receipt_token: str = field(default_factory=lambda: os.getenv("HQ_RECEIPT_TOKEN", ""))
+
     # NotebookLM bridge (optional)
     notebooklm_api_url: str = field(default_factory=lambda: os.getenv("NOTEBOOKLM_API_URL", ""))
     notebooklm_api_key: str = field(default_factory=lambda: os.getenv("NOTEBOOKLM_API_KEY", ""))

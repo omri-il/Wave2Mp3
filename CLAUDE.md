@@ -5,7 +5,7 @@ WAV session merger and converter. Polls Google Drive for .wav recordings from a 
 ## Architecture
 
 Two components:
-1. **VPS Agent** (`main.py`) — Polls Drive, groups sessions, merges via FFmpeg, uploads MP3, archives originals, sends Telegram notifications
+1. **VPS Agent** (`main.py`) — Polls Drive, groups sessions, merges via FFmpeg, uploads MP3, archives originals, counts the session in the 08:00 business-hq digest (Telegram only for problems)
 2. **USB Transfer** (`usb_transfer/`) — Laptop script that detects USB mic, checks which files are already on Drive, uploads new ones, offers to delete confirmed-on-Drive files via Telegram
 
 ## Project Structure
@@ -20,7 +20,8 @@ drive/uploader.py      — Upload MP3 to Drive
 drive/archiver.py      — Move .wav to archive folder on Drive
 processor/session_grouper.py — Group files by time gap into sessions
 processor/audio_merger.py    — FFmpeg concat + WAV→MP3
-notifier/telegram_bot.py     — Telegram notifications + inline keyboard
+notifier/telegram_bot.py     — Telegram messages, problems only (low disk, a failed session)
+notifier/hq_receipt.py       — good news → business-hq's receipts box (the 08:00 digest)
 notebooklm/client.py        — HTTP client for NotebookLM bridge
 usb_transfer/detector.py    — USB drive detection (psutil)
 usb_transfer/transfer.py    — Copy .wav from mic → Drive, skip already-uploaded, Telegram delete prompt
@@ -79,10 +80,24 @@ sudo systemctl enable --now wave2mp3
 - **Restart:** `systemctl restart wave2mp3`
 - ⚠️ **Keep `httpx`/`httpcore` at WARNING** (right after `basicConfig` in `main.py` and `usb_transfer/transfer.py`). python-telegram-bot sends through httpx, which logs every request URL at INFO — and a Telegram URL contains the bot token. This bot is shared with ~10 other services, so a leak here would expose all of them.
 
+## Notifications: problems ring, good news goes to the digest (2026-10-20)
+
+Omri's rule (2026-10-19): a receipt lives only as a line in the 08:00 business-hq digest.
+A finished session is one count there: `hq_receipt.receipt(...)` → `POST HQ_RECEIPT_URL`
+`{"group":"wave2mp3","key":"merged","n":1,"label":"{n} הקלטות מהמיקרופון הומרו ל-MP3"}`
+(VPS `.env`: `HQ_RECEIPT_URL=http://127.0.0.1:5051/api/receipt`, `HQ_RECEIPT_TOKEN` = business-hq's
+`RECEIPT_TOKEN`; unset → skipped; a down HQ is logged and dropped). Low disk space and a failed
+session still go to Telegram and ring. The laptop's USB "delete from the mic?" prompt is unchanged.
+
+Removed the same day: the "✅ Upload to NotebookLM" / "❌ Skip" buttons under the old
+"Session processed" message. Nothing ever answered them (`start_polling()` was never called), and
+a `getUpdates` reader on the shared bot would have stolen other services' taps. The
+`notebooklm/client.py` module is still here, unused.
+
 ## NotebookLM Integration
 
 Optional. Requires the notebooklm-api bridge running on Home PC (`http://100.111.186.101:5111`).
-Set `NOTEBOOKLM_API_URL` in `.env` to enable. If bridge is unreachable, notifications are sent via Telegram — non-fatal.
+Set `NOTEBOOKLM_API_URL` in `.env` to enable. ⚠️ Nothing in `main.py` calls it today (see Notifications above).
 
 ## NotebookLM Bridge
 

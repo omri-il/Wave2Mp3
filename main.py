@@ -22,6 +22,7 @@ from processor.session_grouper import group_into_sessions
 from processor.audio_merger import merge_session
 from drive.uploader import upload_mp3
 from drive.archiver import archive_files
+from notifier import hq_receipt
 from notifier.telegram_bot import TelegramNotifier
 
 logging.basicConfig(
@@ -118,8 +119,10 @@ def _poll_cycle(monitor: DriveMonitor, db: Database, drive_service, notifier: Te
             db.complete_session(session_id, mp3_drive_id, mp3_filename)
             db.update_files_status([f["drive_file_id"] for f in session_files], "done")
 
-            # Notify via Telegram
-            notifier.send_session_complete(session_id, mp3_filename, len(session_files))
+            # Good news → one count in the 08:00 business-hq digest, not Telegram
+            hq_receipt.receipt(settings.hq_receipt_url, settings.hq_receipt_token,
+                               "wave2mp3", "merged", n=1,
+                               label="{n} הקלטות מהמיקרופון הומרו ל-MP3")
 
             logger.info("Session %s complete: %s", session_id, mp3_filename)
 
