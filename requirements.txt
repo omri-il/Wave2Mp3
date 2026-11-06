@@ -5,3 +5,8 @@ python-telegram-bot
 python-dotenv
 httpx
 psutil
+
+# Security floors, 2026-11-07 audit (transitive deps pinned on purpose)
+certifi>=2026.10.18
+urllib3>=2.8.0
+requests>=2.33.0
